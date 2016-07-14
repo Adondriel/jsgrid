@@ -1259,7 +1259,13 @@
                 editedItem = item;
             }
 
+            if(!this._editingRow){
+                return;
+              }
             var $row = item ? this.rowByItem(item) : this._editingRow;
+
+
+
             editedItem = editedItem || this._getValidatedEditedItem();
 
             if(!editedItem)

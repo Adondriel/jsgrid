@@ -155,7 +155,7 @@
                 return error.message || null;
             });
 
-            window.alert([this.invalidMessage].concat(messages).join("\n"));
+            $.alert([this.invalidMessage].concat(messages).join("\n"));
         },
 
         onInit: $.noop,
@@ -1352,7 +1352,7 @@
             if(!$row.length)
                 return;
 
-            if(this.confirmDeleting && !window.confirm(getOrApply(this.deleteConfirm, this, $row.data(JSGRID_ROW_DATA_KEY))))
+            if(this.confirmDeleting && !$.confirm(getOrApply(this.deleteConfirm, this, $row.data(JSGRID_ROW_DATA_KEY))))
                 return;
 
             return this._deleteRow($row);

@@ -161,7 +161,7 @@
                 return error.message || null;
             });
 
-            window.alert([this.invalidMessage].concat(messages).join("\n"));
+            $.alert([this.invalidMessage].concat(messages).join("\n"));
         },
 
         onInit: $.noop,
@@ -1358,7 +1358,7 @@
             if(!$row.length)
                 return;
 
-            if(this.confirmDeleting && !window.confirm(getOrApply(this.deleteConfirm, this, $row.data(JSGRID_ROW_DATA_KEY))))
+            if(this.confirmDeleting && !$.confirm(getOrApply(this.deleteConfirm, this, $row.data(JSGRID_ROW_DATA_KEY))))
                 return;
 
             return this._deleteRow($row);
@@ -2505,7 +2505,7 @@
 
 }(jsGrid, jQuery));
 
-(function(jsGrid, $, undefined) {
+(function (jsGrid, $, undefined) {
     var TextField = jsGrid.Field;
 
     function SumField(config) {
@@ -2517,33 +2517,45 @@
 
         sorter: "number",
         align: "right",
-		readOnly: true,
+        readOnly: true,
         columns: [],
-        
-        itemTemplate: function(value, item) {
-           // console.info(item);
+
+        itemTemplate: function (value, item) {
+            // console.info(item);
             var sum = 0;
-            $.each(this.columns, function(field, value){
+            $.each(this.columns, function (field, value) {
                 sum += item[value];
             })
             return sum;
-        }
-/*        filterValue: function() {
-            return parseInt(this.filterControl.val() || 0, 10);
+        },
+        filterValue: function () {
+            var sum = 0;
+            $.each(this.columns, function (field, value) {
+                sum += item[value];
+            })
+            return sum;
         },
 
-        insertValue: function() {
-            return parseInt(this.insertControl.val() || 0, 10);
+        insertValue: function () {
+            var sum = 0;
+            $.each(this.columns, function (field, value) {
+                sum += item[value];
+            })
+            return sum;
         },
 
-        editValue: function() {
-            return parseInt(this.editControl.val() || 0, 10);
+        editValue: function () {
+            var sum = 0;
+            $.each(this.columns, function (field, value) {
+                sum += item[value];
+            })
+            return sum;
         },
 
-        _createTextBox: function() {                        
-			return $("<input>").attr("type", "number")
+        _createTextBox: function () {
+            return $("<input>").attr("type", "number")
                 .prop("readonly", !!this.readOnly);
-        }*/
+        }
     });
 
     jsGrid.fields.sum = jsGrid.SumField = SumField;

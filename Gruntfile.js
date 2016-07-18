@@ -1,4 +1,4 @@
-﻿module.exports = function(grunt) {
+module.exports = function(grunt) {
     "use strict"
 
     var banner =
@@ -47,7 +47,8 @@
                     "src/fields/jsgrid.field.textarea.js",
                     "src/fields/jsgrid.field.select.js",
                     "src/fields/jsgrid.field.checkbox.js",
-                    "src/fields/jsgrid.field.control.js"
+                    "src/fields/jsgrid.field.control.js",
+                    "src/fields/jsgrid.field.sum.js"
                 ],
                 dest: "dist/<%= pkg.name %>.js"
             },

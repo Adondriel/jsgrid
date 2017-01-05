@@ -688,6 +688,7 @@ $(function() {
         grid.option("data", []);
 
         equal(grid._content.find("." + grid.noDataRowClass).length, 1, "no data row rendered");
+        equal(grid._content.find("." + grid.cellClass).length, 1, "grid cell class attached");
         equal(grid._content.text(), grid.noDataContent, "no data text rendered");
     });
 
@@ -703,6 +704,7 @@ $(function() {
 
         grid.option("data", []);
 
+        equal(grid._content.find("." + grid.cellClass).length, 1, "grid cell class attached");
         equal(grid._content.text(), noDataMessage, "custom noDataContent");
     });
 
@@ -1285,9 +1287,50 @@ $(function() {
         equal(updatedArgs.row[0], updatedRow, "row element is provided in updated event args");
     });
 
+    test("failed update should not change original item", function() {
+        var $element = $("#jsGrid"),
+            data = [{
+                field: "value"
+            }],
+
+            gridOptions = {
+                editing: true,
+                fields: [
+                    {
+                        name: "field",
+                        editTemplate: function(value) {
+                            var result = this.editControl = $("<input>").attr("type", "text").val(value);
+                            return result;
+                        },
+                        editValue: function() {
+                            return this.editControl.val();
+                        }
+                    }
+                ],
+                controller: {
+                    updateItem: function(updatingItem) {
+                        return $.Deferred().reject();
+                    }
+                }
+            },
+
+            grid = new Grid($element, gridOptions);
+
+        grid.option("data", data);
+
+        grid.editItem(data[0]);
+
+        grid.fields[0].editControl.val("new value");
+        grid.updateItem();
+
+        deepEqual(grid.option("data")[0], { field: "value" }, "value is not updated");
+    });
+
     test("cancel edit", function() {
         var $element = $("#jsGrid"),
             updated = false,
+            cancellingArgs,
+            cancellingRow,
             data = [{
                 field: "value"
             }],
@@ -1310,6 +1353,10 @@ $(function() {
                     updateData: function(updatingItem) {
                         updated = true;
                     }
+                },
+                onItemEditCancelling: function(e) {
+                    cancellingArgs = $.extend(true, {}, e);
+                    cancellingRow = grid.rowByItem(data[0])[0];
                 }
             },
 
@@ -1320,6 +1367,10 @@ $(function() {
         grid.editItem(data[0]);
         grid.fields[0].editControl.val("new value");
         grid.cancelEdit();
+
+        deepEqual(cancellingArgs.item, { field: "value" }, "item before cancel is provided in cancelling event args");
+        equal(cancellingArgs.itemIndex, 0, "itemIndex is provided in cancelling event args");
+        equal(cancellingArgs.row[0], cancellingRow, "row element is provided in cancelling event args");
 
         ok(!updated, "controller updateItem was not called");
         deepEqual(grid.option("data")[0], { field: "value" }, "data were not updated");
@@ -1383,6 +1434,35 @@ $(function() {
 
         deepEqual(updatingItem, { field: "new value" }, "controller updateItem called correctly");
         deepEqual(grid.option("data")[0], { field: "new value" }, "correct data updated");
+    });
+
+    test("editRowRenderer", function() {
+        var $element = $("#jsGrid"),
+
+            data = [
+                { value: "test" }
+            ],
+
+            gridOptions = {
+                data: data,
+                editing: true,
+
+                editRowRenderer: function(item, itemIndex) {
+                    return $("<tr>").addClass("custom-edit-row").append($("<td>").text(itemIndex + ":" + item.value));
+                },
+
+                fields: [
+                    { name: "value" }
+                ]
+            },
+
+            grid = new Grid($element, gridOptions);
+
+        grid.editItem(data[0]);
+
+        var $editRow = grid._content.find(".custom-edit-row");
+        equal($editRow.length, 1, "edit row rendered");
+        equal($editRow.text(), "0:test", "custom edit row renderer rendered");
     });
 
 
@@ -2217,8 +2297,8 @@ $(function() {
             ],
 
             onItemUpdating: function(args) {
-                updatingItem = args.item;
-                previousItem = args.previousItem;
+                updatingItem = $.extend(true, {}, args.item);
+                previousItem = $.extend(true, {}, args.previousItem);
             }
         };
 
@@ -2648,8 +2728,9 @@ $(function() {
     });
 
     asyncTest("should support JS promise success callback", 1, function() {
-        if(!Promise) {
+        if(typeof Promise === "undefined") {
             ok(true, "Promise not supported");
+            start();
             return;
         }
 
@@ -2677,8 +2758,9 @@ $(function() {
     });
 
     asyncTest("should support JS promise fail callback", 1, function() {
-        if(!Promise) {
+        if(typeof Promise === "undefined") {
             ok(true, "Promise not supported");
+            start();
             return;
         }
 
@@ -2723,4 +2805,27 @@ $(function() {
             equal(result, data, "data provided to done callback");
         });
     });
+
+
+    module("renderTemplate");
+
+    test("should pass undefined and null arguments to the renderer", function() {
+        var rendererArgs;
+        var rendererContext;
+        var context = {};
+
+        var renderer = function() {
+            rendererArgs = arguments;
+            rendererContext = this;
+        };
+
+        Grid.prototype.renderTemplate(renderer, context, { arg1: undefined, arg2: null, arg3: "test" });
+
+        equal(rendererArgs.length, 3);
+        strictEqual(rendererArgs[0], undefined, "undefined passed");
+        strictEqual(rendererArgs[1], null, "null passed");
+        strictEqual(rendererArgs[2], "test", "null passed");
+        strictEqual(rendererContext, context, "context is preserved");
+    });
+
 });

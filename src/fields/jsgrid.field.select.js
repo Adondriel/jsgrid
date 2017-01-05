@@ -88,8 +88,15 @@
         },
 
         editValue: function() {
-            var val = this.editControl.val();
-            return this.valueType === numberValueType ? parseInt(val || 0, 10) : val;
+            var val = this.editControl 
+            ? this.editControl.val() 
+            : undefined;
+
+            return val 
+            ? (this.valueType === numberValueType 
+                ? parseInt(val || 0, 10) 
+                : val) 
+            : undefined;
         },
 
         _createSelect: function() {

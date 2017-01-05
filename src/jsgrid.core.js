@@ -1344,6 +1344,10 @@
             return result;
         },
 
+        isEditing: function(){
+            return this._editingRow;
+        },
+
         cancelEdit: function() {
             if(!this._editingRow)
                 return;

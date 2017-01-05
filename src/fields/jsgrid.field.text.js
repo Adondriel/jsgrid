@@ -55,7 +55,7 @@
         },
 
         editValue: function() {
-            return this.editControl.val();
+            return this.editControl ? (this.editControl.val() || "" ): undefined;
         },
 
         _createTextBox: function() {

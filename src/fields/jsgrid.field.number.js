@@ -25,9 +25,9 @@
         },
 
         editValue: function() {
-            return this.editControl.val()
-                ? parseInt(this.editControl.val() || 0, 10)
-                : undefined;
+            return this.editControl 
+            ? parseInt(this.editControl.val() || 0, 10) 
+            : undefined;
         },
 
         _createTextBox: function() {

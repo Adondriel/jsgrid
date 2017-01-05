@@ -1,6 +1,6 @@
 /*
  * jsGrid v1.5.3 (http://js-grid.com)
- * (c) 2016 Artem Tabalin
+ * (c) 2017 Artem Tabalin
  * Licensed under MIT (https://github.com/tabalinas/jsgrid/blob/master/LICENSE)
  */
 
@@ -173,6 +173,7 @@
         onItemInserting: $.noop,
         onItemInserted: $.noop,
         onItemEditing: $.noop,
+        onItemEditCancelling: $.noop,
         onItemUpdating: $.noop,
         onItemUpdated: $.noop,
         onItemInvalid: $.noop,
@@ -1168,9 +1169,6 @@
 
                 var fieldValue = this._getItemFieldValue(item, field);
 
-                if(fieldValue === undefined)
-                    return;
-
                 var errors = this._validation.validate($.extend({
                     value: fieldValue,
                     rules: field.validate
@@ -1355,6 +1353,16 @@
         cancelEdit: function() {
             if(!this._editingRow)
                 return;
+
+            var $row = this._editingRow,
+                editingItem = $row.data(JSGRID_ROW_DATA_KEY),
+                editingItemIndex = this._itemIndex(editingItem);
+
+            this._callEventHandler(this.onItemEditCancelling, {
+                row: $row,
+                item: editingItem,
+                itemIndex: editingItemIndex
+            });
 
             this._getEditRow().remove();
             this._editingRow.show();

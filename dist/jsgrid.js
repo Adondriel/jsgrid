@@ -2002,7 +2002,7 @@
         },
 
         editValue: function() {
-            return this.editControl ? (this.editControl.val() || "" ): undefined;
+            return this.editControl.val();
         },
 
         _createTextBox: function() {
@@ -2042,9 +2042,9 @@
         },
 
         editValue: function() {
-            return this.editControl 
-            ? parseInt(this.editControl.val() || 0, 10) 
-            : undefined;
+            return this.editControl.val()
+                ? parseInt(this.editControl.val() || 0, 10)
+                : undefined;
         },
 
         _createTextBox: function() {
@@ -2182,15 +2182,8 @@
         },
 
         editValue: function() {
-            var val = this.editControl 
-            ? this.editControl.val() 
-            : undefined;
-
-            return val 
-            ? (this.valueType === numberValueType 
-                ? parseInt(val || 0, 10) 
-                : val) 
-            : undefined;
+            var val = this.editControl.val();
+            return this.valueType === numberValueType ? parseInt(val || 0, 10) : val;
         },
 
         _createSelect: function() {
